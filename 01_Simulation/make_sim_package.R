@@ -38,6 +38,8 @@ epsilon <- 0
 mu0_down <- 0
 # dispersal mortality upstream
 mu0_up <- 0
+# mutational model used (0 --> random; 1 --> stepwise)
+mut_model_smm <- 1
 
 ##################################################################
 # name of simulation program (is abbreviated as in the "ps" output!)
@@ -96,7 +98,7 @@ for (disp_rate_cnt in 1:length(disp_rate)){
       setwd(ACTWD_3)
       
       # write parameter input file
-      parameter_values <- matrix(ncol=1,nrow=30)
+      parameter_values <- matrix(ncol=1,nrow=32)
       parameter_values[1,]  <- "inputfile for parameters"
       parameter_values[2,]  <- ""
       parameter_values[3,]  <- "simulation time (sim_time)"
@@ -127,6 +129,8 @@ for (disp_rate_cnt in 1:length(disp_rate)){
       parameter_values[28,]  <- w_up[w_up_cnt]
       parameter_values[29,]  <- "use average carrying capacity (0) or scale with catchement size (1)"
       parameter_values[30,]  <- K_scale[K_scale_cnt]
+      parameter_values[31,]  <- "mutational model used (0 --> random; 1 --> stepwise)"
+      parameter_values[32,]  <- mut_model_smm
       write.table(file=paste(ACTWD_3,"/input/parameters.in",sep=""),parameter_values,col.names=F,row.names=F,quote=F)
       
       # now compile the code

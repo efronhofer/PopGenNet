@@ -4,7 +4,7 @@
 //============================================================================
 
 /*
-	Copyright (C) 2020  Emanuel A. Fronhofer
+	Copyright (C) 2021  Emanuel A. Fronhofer
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
  * organisms (Gammaridae of Switzerland) in a time-discrete model with non-overlapping generations.
  * This implementation is analogous to Morrissey & de Kerckhove (2009) Am. Nat.
  * I model 10 patches with 100 individuals with 10 diploid loci and 100 alleles.
+ * This model version allows to choose the mutational model assumed for the neutral loci (random vs. stepwise)
  */
 
 #include <iostream>
@@ -78,7 +79,9 @@ float mut_rate_neutral;															// pop gen. mutation rate at these loci
 
 float w_up;																		// weighting of upstream movement
 double average_heterozygosity;
-bool K_scale;																		// sclaing of K with catchment size?
+bool K_scale;																	// sclaing of K with catchment size?
+
+bool mut_model_smm;																// choose mutational model: 0 -_> random; 1 -> stepwise
 
 //_____________________________________________________________________________
 //------------------------------------------------------------------ procedures
@@ -118,6 +121,8 @@ void readParameters(){
 	is >> w_up;																			//weighting of upstream movement
 	getline(parinfile,buffer); getline(parinfile,buffer); is.clear(); is.str(buffer);
 	is >> K_scale;																		//scaling of K with catchment size
+	getline(parinfile,buffer); getline(parinfile,buffer); is.clear(); is.str(buffer);
+	is >> mut_model_smm;																//mutational model
 	parinfile.close();
 }
 
@@ -472,8 +477,37 @@ void Dispersal(){
 //------------------------------------------------------------------- mutation for neutral loci is completely random
 int mutate_neutral(int allele){
 	if(ran()< mut_rate_neutral){
-		float newallele = floor(ran()*no_neutral_alleles);
+		
+		// init new allele
+		int newallele = 0;
+		
+		// random mutational model
+		if(mut_model_smm == 0){
+			newallele = floor(ran()*no_neutral_alleles);
+		}
+
+		// stepwise mutational model
+		if(mut_model_smm == 1){
+			if(ran()<0.5){
+				//either +1
+				newallele = allele + 1;
+			}else{
+				//or -1
+				newallele = allele - 1;
+			}
+			
+			// check boundary conditions, here reflecting
+			if(newallele < 0){
+				newallele = 1;
+			}
+			if(newallele >= no_neutral_alleles){
+				newallele = no_neutral_alleles - 2; // -2 because it relects from no_neutral_alleles -1
+			}
+			
+		}
+		//return new allele value after mutation
 		return(newallele);
+		
 	} else {
 		return(allele);
 	}
