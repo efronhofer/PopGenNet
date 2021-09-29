@@ -3,7 +3,7 @@ rm(list=ls())
 
 # library includes function to determine number of cores on machine
 library(parallel)
-setwd("~/Documents/sim_package")
+setwd("")
 
 ###################################################################
 # 1) PARAMETERS TO VARY
@@ -12,7 +12,7 @@ disp_rate <- c(0.001,0.01,0.1)
 # weighting of upstream movement probability (w_up; 0: no upstream movement; 1: upstream and downstream movements are equally likely)
 w_up <- c(0,0.5,1)
 # use average carrying capacity (K_scale=0) or scale with catchement size (K_scale = 1)
-K_scale <- c(1)
+K_scale <- c(0,1)
 
 ###################################################################
 # 2) FIXED PARAMATERS
